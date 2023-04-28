@@ -4,8 +4,8 @@ jobs:
   runjob:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./ # Uses an action in the root directory
         with:
-          token: ${{secrets.GITHUB_TOKEN}}
+          token: ${{secrets.TOKEN}}
           discord_webhook: ${{secrets.DISCORD_WEBHOOK_URL}}
