@@ -88657,11 +88657,12 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
+/* eslint-disable max-len */
 /* eslint-disable camelcase */
 const core = __nccwpck_require__(42186);
 const github = __nccwpck_require__(95438);
 const {
-	EmbedBuilder, WebhookClient,
+	AttachmentBuilder, EmbedBuilder, WebhookClient, Attachment,
 } = __nccwpck_require__(85973);
 
 
@@ -88681,6 +88682,7 @@ async function listPullRequests(token, repoOwner, repo) {
 async function run() {
 	try {
 		const token = core.getInput('token');
+		const pacSheetsLink = core.getInput('pacsheetslink');
 		const webhook = new WebhookClient({
 			url: core.getInput('discord_webhook'),
 		});
@@ -88688,6 +88690,7 @@ async function run() {
 		/*
 		require('dotenv').config();
 		const token = process.env.GITHUB_ACCESS_TOKEN;
+		const pacSheetsLink = process.env.PAC_SHEETS_LINK;
 		const webhook = new WebhookClient({
 			url: process.env.DISCORD_WEBHOOK_URL,
 		});
@@ -88760,6 +88763,14 @@ async function run() {
 				: "No new plugins to review!")
 			.setColor("Red");
 
+		const footerEmbed = new EmbedBuilder()
+			.setDescription(`Don't forget to check the [Google Sheet](${pacSheetsLink})`)
+			.setColor("LightGrey");
+
+		// get a friendly capy
+		let capyjson = await fetch("https://api.tinyfox.dev/img?animal=capy&json");
+		capyjson = await capyjson.json();
+		// console.log(await capyjson.json());
 
 		webhook.send({
 			content: "PAC-Nag in action",
@@ -88767,7 +88778,9 @@ async function run() {
 				pluginUpdatesEmbed,
 				pluginUpdatesBlockedEmbed,
 				newPluginsEmbed,
+				footerEmbed,
 			],
+			files: [new AttachmentBuilder().setFile(`https://tinyfox.dev${capyjson.loc}`)],
 		});
 	}
 	catch (error) {

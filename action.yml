@@ -9,6 +9,10 @@ inputs:
     description: "Discord WebHook URL to post results"
     required: true
     default: ""
+  pacsheetslink:
+    description: "Link to the Google Sheet for plugin review"
+    required: true
+    default: ""
 runs:
   using: "node16"
   main: "dist/index.js"
