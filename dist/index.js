@@ -88682,18 +88682,18 @@ async function listPullRequests(token, repoOwner, repo) {
 async function run() {
 	try {
 		const token = core.getInput('token');
-		const pacSheetsLink = core.getInput('pacsheetslink');
 		const webhook = new WebhookClient({
 			url: core.getInput('discord_webhook'),
 		});
+		const pacSheetsLink = core.getInput('pacsheetslink');
 
 		/*
 		require('dotenv').config();
 		const token = process.env.GITHUB_ACCESS_TOKEN;
-		const pacSheetsLink = process.env.PAC_SHEETS_LINK;
 		const webhook = new WebhookClient({
 			url: process.env.DISCORD_WEBHOOK_URL,
 		});
+		const pacSheetsLink = process.env.PAC_SHEETS_LINK;
 		*/
 
 		const repoOwner = github.context.repo.owner;

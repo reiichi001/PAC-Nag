@@ -1,7 +1,7 @@
-name: Run the code
+name: Run Pac-Nag Test
 on: workflow_dispatch
 jobs:
-  runjob:
+  pacnag:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
