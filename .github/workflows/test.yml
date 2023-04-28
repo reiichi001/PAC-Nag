@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: reiichi001/PAC-Nag # will this work?
+      - uses: reiichi001/PAC-Nag@9d2c2133 # will this work?
         with:
           token: ${{secrets.TOKEN}}
           discord_webhook: ${{secrets.DISCORD_WEBHOOK_URL}}
