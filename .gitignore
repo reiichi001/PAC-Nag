@@ -5,5 +5,3 @@ config/*/tickets.json
 .DS_Store
 .idea
 .env
-dist
-dist/*

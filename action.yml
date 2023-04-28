@@ -1,0 +1,14 @@
+name: "PAC-Nag"
+description: "List current Dalamud Plugins for Review"
+inputs:
+  token:
+    description: "GitHub PAT for API access"
+    required: true
+    default: ""
+  discord_webhook:
+    description: "Discord WebHook URL to post results"
+    required: true
+    default: ""
+runs:
+  using: "node16"
+  main: "dist/index.js"

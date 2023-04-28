@@ -1,0 +1,23 @@
+{
+  "name": "pac-nag",
+  "version": "0.0.1",
+  "description": "Nag the PAC",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "prepare": "ncc build index.js -o dist --source-map --license licenses.txt",
+    "all": "npm run lint && npm run prepare"
+  },
+  "author": "Franz",
+  "license": "ISC",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^5.1.1",
+    "discord.js": "^14.9.0"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.36.1",
+    "eslint": "^8.37.0",
+    "dotenv": "^16.0.3"
+  }
+}
