@@ -1,0 +1,5 @@
+- name: Run the code
+  uses: ./ # Uses an action in the root directory
+  with:
+    token: ${{secrets.GITHUB_TOKEN}}
+    discord_webhook: ${{secrets.DISCORD_WEBHOOK_URL}}
