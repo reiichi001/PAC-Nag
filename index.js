@@ -21,14 +21,18 @@ async function listPullRequests(token, repoOwner, repo) {
 
 async function run() {
 	try {
-		// const token = core.getInput('token');
-		// const webhook = new WebhookClient({ url: core.getInput('discord_webhook') });
+		const token = core.getInput('token');
+		const webhook = new WebhookClient({
+			url: core.getInput('discord_webhook'),
+		});
 
-		require('dotenv').config();
+		/*
+        require('dotenv').config();
 		const token = process.env.GITHUB_ACCESS_TOKEN;
 		const webhook = new WebhookClient({
 			url: process.env.DISCORD_WEBHOOK_URL,
 		});
+        */
 
 		const repoOwner = github.context.repo.owner;
 		const repo = github.context.repo.repo;
