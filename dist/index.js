@@ -88686,12 +88686,12 @@ async function run() {
 		});
 
 		/*
-        require('dotenv').config();
+		require('dotenv').config();
 		const token = process.env.GITHUB_ACCESS_TOKEN;
 		const webhook = new WebhookClient({
 			url: process.env.DISCORD_WEBHOOK_URL,
 		});
-        */
+		*/
 
 		const repoOwner = github.context.repo.owner;
 		const repo = github.context.repo.repo;
@@ -88706,7 +88706,7 @@ async function run() {
 				newPluginsList.push(
 					{
 						title: listitem.title,
-						url: listitem.url,
+						url: listitem.html_url,
 					}
 				);
 			}
@@ -88714,7 +88714,7 @@ async function run() {
 				blockedPluginsList.push(
 					{
 						title: listitem.title,
-						url: listitem.url,
+						url: listitem.html_url,
 					}
 				);
 			}
@@ -88722,7 +88722,7 @@ async function run() {
 				updatesList.push(
 					{
 						title: listitem.title,
-						url: listitem.url,
+						url: listitem.html_url,
 					}
 				);
 			}
