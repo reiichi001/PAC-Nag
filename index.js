@@ -5,7 +5,11 @@ const github = require('@actions/github');
 const {
 	AttachmentBuilder, EmbedBuilder, WebhookClient, Attachment,
 } = require('discord.js');
-
+// we can remove this once github supports nodejs18
+const fetch = (...args) => import('node-fetch').then(({
+	// eslint-disable-next-line no-shadow
+	default: fetch,
+}) => fetch(...args));
 
 async function listPullRequests(token, repoOwner, repo) {
 	const octokit = github.getOctokit(token);
@@ -28,6 +32,7 @@ async function run() {
 		});
 		const pacSheetsLink = core.getInput('pacsheetslink');
 
+
 		/*
 		require('dotenv').config();
 		const token = process.env.GITHUB_ACCESS_TOKEN;
@@ -36,6 +41,7 @@ async function run() {
 		});
 		const pacSheetsLink = process.env.PAC_SHEETS_LINK;
 		*/
+
 
 		const repoOwner = github.context.repo.owner;
 		const repo = github.context.repo.repo;
