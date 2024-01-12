@@ -26,21 +26,20 @@ async function listPullRequests(token, repoOwner, repo) {
 
 async function run() {
 	try {
+		/*
 		const token = core.getInput('token');
 		const webhook = new WebhookClient({
 			url: core.getInput('discord_webhook'),
 		});
 		const pacSheetsLink = core.getInput('pacsheetslink');
+		*/
 
-
-		/*
 		require('dotenv').config();
 		const token = process.env.GITHUB_ACCESS_TOKEN;
 		const webhook = new WebhookClient({
 			url: process.env.DISCORD_WEBHOOK_URL,
 		});
 		const pacSheetsLink = process.env.PAC_SHEETS_LINK;
-		*/
 
 
 		const repoOwner = github.context.repo.owner;
@@ -53,7 +52,7 @@ async function run() {
 		const newPluginsList = [];
 		list.data.forEach(listitem => {
 			const date = new Date(listitem.created_at);
-			const timestamp = date.getTime();
+			const timestamp = Math.floor(date.getTime() / 1000.0);
 
 			if (listitem?.labels?.find(label => label.name == "new plugin")) {
 				newPluginsList.push(
@@ -98,21 +97,21 @@ async function run() {
 		const pluginUpdatesEmbed = new EmbedBuilder()
 			.setTitle("Plugin updates to review and merge")
 			.setDescription(updatesList?.length > 0
-				? updatesList.map(plogon => `[${plogon.title}](${plogon.url} <t:${plogon.timestamp}:R>)`).join("\n")
+				? updatesList.map(plogon => `[${plogon.title}](${plogon.url}) <t:${plogon.timestamp}:R>`).join("\n")
 				: "No plugin updates to review!")
 			.setColor("Green");
 
 		const pluginUpdatesBlockedEmbed = new EmbedBuilder()
 			.setTitle("Plugin updates that are currently blocked")
 			.setDescription(blockedPluginsList?.length > 0
-				? blockedPluginsList.map(plogon => `[${plogon.title}](${plogon.url} <t:${plogon.timestamp}:R>)`).join("\n")
+				? blockedPluginsList.map(plogon => `[${plogon.title}](${plogon.url}) <t:${plogon.timestamp}:R>`).join("\n")
 				: "No blocked plugins to review!")
 			.setColor("Yellow");
 
 		const newPluginsEmbed = new EmbedBuilder()
 			.setTitle("New plugins that need to be reviewed")
 			.setDescription(newPluginsList?.length > 0
-				? newPluginsList.map(plogon => `[${plogon.title}](${plogon.url} <t:${plogon.timestamp}:R>)`).join("\n")
+				? newPluginsList.map(plogon => `[${plogon.title}](${plogon.url}) <t:${plogon.timestamp}:R>`).join("\n")
 				: "No new plugins to review!")
 			.setColor("Red");
 
@@ -124,6 +123,9 @@ async function run() {
 		// let capyjson = await fetch("https://api.tinyfox.dev/img?animal=capy&json");
 		// capyjson = await capyjson.json();
 		// console.log(await capyjson.json());
+		let capyjson = await fetch("https://shibe.online/api/shibes");
+		capyjson = await capyjson.json();
+		// await console.log(capyjson);
 
 		webhook.send({
 			content: "PAC-Nag in action",
@@ -134,7 +136,7 @@ async function run() {
 				footerEmbed,
 			],
 			// files: [new AttachmentBuilder().setFile(`https://tinyfox.dev${capyjson.loc}`)],
-			files: [new AttachmentBuilder().setFile(`https://api.capy.lol/v1/capybara`)],
+			files: [new AttachmentBuilder().setFile(`${await capyjson[0]}`)],
 		});
 	}
 	catch (error) {

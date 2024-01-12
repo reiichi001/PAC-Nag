@@ -56926,6 +56926,125 @@ module.exports = {
 
 /***/ }),
 
+/***/ 12437:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const fs = __nccwpck_require__(57147)
+const path = __nccwpck_require__(71017)
+const os = __nccwpck_require__(22037)
+const packageJson = __nccwpck_require__(49968)
+
+const version = packageJson.version
+
+const LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg
+
+// Parser src into an Object
+function parse (src) {
+  const obj = {}
+
+  // Convert buffer to string
+  let lines = src.toString()
+
+  // Convert line breaks to same format
+  lines = lines.replace(/\r\n?/mg, '\n')
+
+  let match
+  while ((match = LINE.exec(lines)) != null) {
+    const key = match[1]
+
+    // Default undefined or null to empty string
+    let value = (match[2] || '')
+
+    // Remove whitespace
+    value = value.trim()
+
+    // Check if double quoted
+    const maybeQuote = value[0]
+
+    // Remove surrounding quotes
+    value = value.replace(/^(['"`])([\s\S]*)\1$/mg, '$2')
+
+    // Expand newlines if double quoted
+    if (maybeQuote === '"') {
+      value = value.replace(/\\n/g, '\n')
+      value = value.replace(/\\r/g, '\r')
+    }
+
+    // Add to object
+    obj[key] = value
+  }
+
+  return obj
+}
+
+function _log (message) {
+  console.log(`[dotenv@${version}][DEBUG] ${message}`)
+}
+
+function _resolveHome (envPath) {
+  return envPath[0] === '~' ? path.join(os.homedir(), envPath.slice(1)) : envPath
+}
+
+// Populates process.env from .env file
+function config (options) {
+  let dotenvPath = path.resolve(process.cwd(), '.env')
+  let encoding = 'utf8'
+  const debug = Boolean(options && options.debug)
+  const override = Boolean(options && options.override)
+
+  if (options) {
+    if (options.path != null) {
+      dotenvPath = _resolveHome(options.path)
+    }
+    if (options.encoding != null) {
+      encoding = options.encoding
+    }
+  }
+
+  try {
+    // Specifying an encoding returns a string instead of a buffer
+    const parsed = DotenvModule.parse(fs.readFileSync(dotenvPath, { encoding }))
+
+    Object.keys(parsed).forEach(function (key) {
+      if (!Object.prototype.hasOwnProperty.call(process.env, key)) {
+        process.env[key] = parsed[key]
+      } else {
+        if (override === true) {
+          process.env[key] = parsed[key]
+        }
+
+        if (debug) {
+          if (override === true) {
+            _log(`"${key}" is already defined in \`process.env\` and WAS overwritten`)
+          } else {
+            _log(`"${key}" is already defined in \`process.env\` and was NOT overwritten`)
+          }
+        }
+      }
+    })
+
+    return { parsed }
+  } catch (e) {
+    if (debug) {
+      _log(`Failed to load ${dotenvPath} ${e.message}`)
+    }
+
+    return { error: e }
+  }
+}
+
+const DotenvModule = {
+  config,
+  parse
+}
+
+module.exports.config = DotenvModule.config
+module.exports.parse = DotenvModule.parse
+module.exports = DotenvModule
+
+
+/***/ }),
+
 /***/ 50011:
 /***/ ((module) => {
 
@@ -88531,6 +88650,14 @@ module.exports = JSON.parse('{"name":"discord.js","version":"14.9.0","descriptio
 
 /***/ }),
 
+/***/ 49968:
+/***/ ((module) => {
+
+"use strict";
+module.exports = JSON.parse('{"name":"dotenv","version":"16.0.3","description":"Loads environment variables from .env file","main":"lib/main.js","types":"lib/main.d.ts","exports":{".":{"require":"./lib/main.js","types":"./lib/main.d.ts","default":"./lib/main.js"},"./config":"./config.js","./config.js":"./config.js","./lib/env-options":"./lib/env-options.js","./lib/env-options.js":"./lib/env-options.js","./lib/cli-options":"./lib/cli-options.js","./lib/cli-options.js":"./lib/cli-options.js","./package.json":"./package.json"},"scripts":{"dts-check":"tsc --project tests/types/tsconfig.json","lint":"standard","lint-readme":"standard-markdown","pretest":"npm run lint && npm run dts-check","test":"tap tests/*.js --100 -Rspec","prerelease":"npm test","release":"standard-version"},"repository":{"type":"git","url":"git://github.com/motdotla/dotenv.git"},"keywords":["dotenv","env",".env","environment","variables","config","settings"],"readmeFilename":"README.md","license":"BSD-2-Clause","devDependencies":{"@types/node":"^17.0.9","decache":"^4.6.1","dtslint":"^3.7.0","sinon":"^12.0.1","standard":"^16.0.4","standard-markdown":"^7.1.0","standard-version":"^9.3.2","tap":"^15.1.6","tar":"^6.1.11","typescript":"^4.5.4"},"engines":{"node":">=12"}}');
+
+/***/ }),
+
 /***/ 72020:
 /***/ ((module) => {
 
@@ -88733,21 +88860,20 @@ async function listPullRequests(token, repoOwner, repo) {
 
 async function run() {
 	try {
+		/*
 		const token = core.getInput('token');
 		const webhook = new WebhookClient({
 			url: core.getInput('discord_webhook'),
 		});
 		const pacSheetsLink = core.getInput('pacsheetslink');
+		*/
 
-
-		/*
-		require('dotenv').config();
+		(__nccwpck_require__(12437).config)();
 		const token = process.env.GITHUB_ACCESS_TOKEN;
 		const webhook = new WebhookClient({
 			url: process.env.DISCORD_WEBHOOK_URL,
 		});
 		const pacSheetsLink = process.env.PAC_SHEETS_LINK;
-		*/
 
 
 		const repoOwner = github.context.repo.owner;
@@ -88760,7 +88886,7 @@ async function run() {
 		const newPluginsList = [];
 		list.data.forEach(listitem => {
 			const date = new Date(listitem.created_at);
-			const timestamp = date.getTime();
+			const timestamp = Math.floor(date.getTime() / 1000.0);
 
 			if (listitem?.labels?.find(label => label.name == "new plugin")) {
 				newPluginsList.push(
@@ -88805,21 +88931,21 @@ async function run() {
 		const pluginUpdatesEmbed = new EmbedBuilder()
 			.setTitle("Plugin updates to review and merge")
 			.setDescription(updatesList?.length > 0
-				? updatesList.map(plogon => `[${plogon.title}](${plogon.url} <t:${plogon.timestamp}:R>)`).join("\n")
+				? updatesList.map(plogon => `[${plogon.title}](${plogon.url}) <t:${plogon.timestamp}:R>`).join("\n")
 				: "No plugin updates to review!")
 			.setColor("Green");
 
 		const pluginUpdatesBlockedEmbed = new EmbedBuilder()
 			.setTitle("Plugin updates that are currently blocked")
 			.setDescription(blockedPluginsList?.length > 0
-				? blockedPluginsList.map(plogon => `[${plogon.title}](${plogon.url} <t:${plogon.timestamp}:R>)`).join("\n")
+				? blockedPluginsList.map(plogon => `[${plogon.title}](${plogon.url}) <t:${plogon.timestamp}:R>`).join("\n")
 				: "No blocked plugins to review!")
 			.setColor("Yellow");
 
 		const newPluginsEmbed = new EmbedBuilder()
 			.setTitle("New plugins that need to be reviewed")
 			.setDescription(newPluginsList?.length > 0
-				? newPluginsList.map(plogon => `[${plogon.title}](${plogon.url} <t:${plogon.timestamp}:R>)`).join("\n")
+				? newPluginsList.map(plogon => `[${plogon.title}](${plogon.url}) <t:${plogon.timestamp}:R>`).join("\n")
 				: "No new plugins to review!")
 			.setColor("Red");
 
@@ -88831,6 +88957,9 @@ async function run() {
 		// let capyjson = await fetch("https://api.tinyfox.dev/img?animal=capy&json");
 		// capyjson = await capyjson.json();
 		// console.log(await capyjson.json());
+		let capyjson = await fetch("https://shibe.online/api/shibes");
+		capyjson = await capyjson.json();
+		// await console.log(capyjson);
 
 		webhook.send({
 			content: "PAC-Nag in action",
@@ -88841,7 +88970,7 @@ async function run() {
 				footerEmbed,
 			],
 			// files: [new AttachmentBuilder().setFile(`https://tinyfox.dev${capyjson.loc}`)],
-			files: [new AttachmentBuilder().setFile(`https://api.capy.lol/v1/capybara`)],
+			files: [new AttachmentBuilder().setFile(`${await capyjson[0]}`)],
 		});
 	}
 	catch (error) {
