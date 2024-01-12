@@ -52,11 +52,15 @@ async function run() {
 		const blockedPluginsList = [];
 		const newPluginsList = [];
 		list.data.forEach(listitem => {
+			const date = new Date(listitem.created_at);
+			const timestamp = date.getTime();
+
 			if (listitem?.labels?.find(label => label.name == "new plugin")) {
 				newPluginsList.push(
 					{
 						title: listitem.title,
 						url: listitem.html_url,
+						timestamp,
 					}
 				);
 			}
@@ -65,6 +69,7 @@ async function run() {
 					{
 						title: listitem.title,
 						url: listitem.html_url,
+						timestamp,
 					}
 				);
 			}
@@ -73,6 +78,7 @@ async function run() {
 					{
 						title: listitem.title,
 						url: listitem.html_url,
+						timestamp,
 					}
 				);
 			}
@@ -92,21 +98,21 @@ async function run() {
 		const pluginUpdatesEmbed = new EmbedBuilder()
 			.setTitle("Plugin updates to review and merge")
 			.setDescription(updatesList?.length > 0
-				? updatesList.map(plogon => `[${plogon.title}](${plogon.url})`).join("\n")
+				? updatesList.map(plogon => `[${plogon.title}](${plogon.url} <t:${plogon.timestamp}:R>)`).join("\n")
 				: "No plugin updates to review!")
 			.setColor("Green");
 
 		const pluginUpdatesBlockedEmbed = new EmbedBuilder()
 			.setTitle("Plugin updates that are currently blocked")
 			.setDescription(blockedPluginsList?.length > 0
-				? blockedPluginsList.map(plogon => `[${plogon.title}](${plogon.url})`).join("\n")
+				? blockedPluginsList.map(plogon => `[${plogon.title}](${plogon.url} <t:${plogon.timestamp}:R>)`).join("\n")
 				: "No blocked plugins to review!")
 			.setColor("Yellow");
 
 		const newPluginsEmbed = new EmbedBuilder()
 			.setTitle("New plugins that need to be reviewed")
 			.setDescription(newPluginsList?.length > 0
-				? newPluginsList.map(plogon => `[${plogon.title}](${plogon.url})`).join("\n")
+				? newPluginsList.map(plogon => `[${plogon.title}](${plogon.url} <t:${plogon.timestamp}:R>)`).join("\n")
 				: "No new plugins to review!")
 			.setColor("Red");
 
@@ -115,8 +121,8 @@ async function run() {
 			.setColor("LightGrey");
 
 		// get a friendly capy
-		let capyjson = await fetch("https://api.tinyfox.dev/img?animal=capy&json");
-		capyjson = await capyjson.json();
+		// let capyjson = await fetch("https://api.tinyfox.dev/img?animal=capy&json");
+		// capyjson = await capyjson.json();
 		// console.log(await capyjson.json());
 
 		webhook.send({
@@ -127,7 +133,8 @@ async function run() {
 				newPluginsEmbed,
 				footerEmbed,
 			],
-			files: [new AttachmentBuilder().setFile(`https://tinyfox.dev${capyjson.loc}`)],
+			// files: [new AttachmentBuilder().setFile(`https://tinyfox.dev${capyjson.loc}`)],
+			files: [new AttachmentBuilder().setFile(`https://api.capy.lol/v1/capybara`)],
 		});
 	}
 	catch (error) {
