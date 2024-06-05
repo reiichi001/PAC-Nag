@@ -4,7 +4,7 @@
   "description": "Nag the PAC",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint index.js",
     "prepare": "ncc build index.js -o dist --source-map --license licenses.txt",
     "all": "npm run lint && npm run prepare"
   },

@@ -88825,15 +88825,8 @@ async function run() {
 			.setDescription(`Don't forget to check the [Google Sheet](${pacSheetsLink})`)
 			.setColor("LightGrey");
 
-		// get a friendly capy
-		// let capyjson = await fetch("https://api.tinyfox.dev/img?animal=capy&json");
-		// capyjson = await capyjson.json();
-		// console.log(await capyjson.json());
-		let capyjson = await fetch("https://shibe.online/api/shibes");
-		capyjson = await capyjson.json();
-		// await console.log(capyjson);
 
-		webhook.send({
+		const nagpayload = {
 			content: "PAC-Nag in action",
 			embeds: [
 				pluginUpdatesEmbed,
@@ -88841,9 +88834,29 @@ async function run() {
 				newPluginsEmbed,
 				footerEmbed,
 			],
-			// files: [new AttachmentBuilder().setFile(`https://tinyfox.dev${capyjson.loc}`)],
-			files: [new AttachmentBuilder().setFile(`${await capyjson[0]}`)],
-		});
+		};
+
+		// get a friendly animal picture for motivation
+		// let capyjson = await fetch("https://api.tinyfox.dev/img?animal=capy&json");
+		// capyjson = await capyjson.json();
+		// console.log(await capyjson.json());
+		// let capyjson = await fetch("https://shibe.online/api/shibes");
+		// capyjson = await capyjson.json();
+		// await console.log(capyjson);
+		let animaljson = await fetch("https://cataas.com/cat");
+
+		if (animaljson?.status == 200) {
+			try {
+				animaljson = Buffer.from(await animaljson.arrayBuffer());
+				nagpayload.files = [new AttachmentBuilder().setFile(await animaljson ?? `https://http.cat/404.jpg`)];
+			}
+			catch {
+				console.log("Animal API failed");
+			}
+		}
+
+
+		webhook.send(nagpayload);
 	}
 	catch (error) {
 		core.setFailed(error.message);
